@@ -58,48 +58,40 @@ func (t *Tree) contains(val int) bool {
 	return containsValue(t.root, val)
 }
 
-func (t *Tree) Delete(value int) bool {
-	return deleteValue(t.root, value)
+func (t *Tree) Delete(value int) {
+	t.root = deleteNode(t.root, value)
 }
 
-func deleteValue(node *Node, value int) bool {
-	if node == nil {
-		return true
-	}
-
-	if node.value == value {
+func deleteNode(node *Node, value int) *Node {
+	if value > node.value {
+		node.right = deleteNode(node.right, value)
+	} else if value < node.value {
+		node.left = deleteNode(node.left, value)
+	} else {
 		if node.right == nil && node.left == nil {
-			node = nil
-			return true
+			return nil
 		}
 
 		if node.left == nil {
-			node = node.right
-			return true
+			return node.right
 		}
 
 		if node.right == nil {
-			node = node.left
-			return true
+			return node.left
 		}
 
+		node.value = findSmallestValue(*node.right)
+		node.right = deleteNode(node.right, node.value)
 	}
 
-	if value > node.value {
-		deleteValue(node.right, value)
-	} else {
-		deleteValue(node.left, value)
-	}
-
-	return false
+	return node // node == nil
 }
 
 func findSmallestValue(node Node) int {
 	if node.left == nil {
 		return node.value
-	} else {
-		return findSmallestValue(*node.left)
 	}
+	return findSmallestValue(*node.left)
 }
 
 func (t *Tree) Traverse(f func(int)) {
